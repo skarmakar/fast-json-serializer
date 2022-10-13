@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     fast-json-serializer (0.1.0)
-      activerecord (>= 5.0, < 7.1)
+      oj (~> 3.13)
 
 GEM
   remote: https://rubygems.org/
@@ -45,6 +45,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord (>= 5.0, < 7.1)
   fast-json-serializer!
   oj (~> 3.13)
   pg (>= 1.1.1, < 2.0)
