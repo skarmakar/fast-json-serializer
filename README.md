@@ -20,7 +20,365 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Create a `app/serializers/application_serializer.rb` with the following code:
+
+```ruby
+# app/serializers/application_serializer.rb
+
+require 'fast/json/serializer/base'
+
+class ApplicationSerializer < Fast::Json::Serializer::Base
+end
+
+```
+
+Make the other serializers a subclass of the `ApplicationSerializer` class
+
+```ruby
+# app/serializers/post_serializer.rb
+
+class PostSerializer < ApplicationSerializer
+  # enable FastJsonapi format by uncommenting this line
+  # set_type :post
+
+  attributes :id, :title, :creator_name, :creator_email
+
+  # use a ruby/rails formatter
+  attribute :created_at, format: :to_s
+  attribute :updated_at, format: :to_s
+
+  # rename the json key name
+  attribute :created_at_epoch, column_name: :created_at, format: :to_i
+  attribute :updated_at_epoch, column_name: :updated_at, format: :to_i
+
+  # use custom method
+  attribute :created_at_ist do |serializer, hash|
+    serializer.ist_time(hash['created_at'])
+  end
+
+  attribute :updated_at_ist do |serializer, hash|
+    serializer.ist_time(hash['updated_at'])
+  end
+
+  # a class method can be used as well 
+  def ist_time(timestamp)
+    return unless timestamp
+    
+    timestamp.in_time_zone("Kolkata").strftime('%A - %b %d, %Y')
+  end
+end
+
+```
+
+### Formatting of the JSON
+
+Currently, it supports format two formats, key-value, and FastJsonapi format
+
+```ruby
+PostSerializer.new(Post.limit(10)).serialized_json
+```
+
+produces, with `set_type :post` enabled:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "type": "post",
+      "attributes": {
+        "id": 1,
+        "title": "Tacos",
+        "creator_name": "Ella Erdman",
+        "creator_email": "sean.zieme@smitham.name",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 2,
+      "type": "post",
+      "attributes": {
+        "id": 2,
+        "title": "Barbecue Ribs",
+        "creator_name": "Mrs. Fern Yundt",
+        "creator_email": "rafael.simonis@metz.com",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 69,
+      "type": "post",
+      "attributes": {
+        "id": 69,
+        "title": "French Fries with Sausages",
+        "creator_name": "Vance Connelly",
+        "creator_email": "leslee_langosh@mann.biz",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 3,
+      "type": "post",
+      "attributes": {
+        "id": 3,
+        "title": "Pork Belly Buns",
+        "creator_name": "Mrs. Willie Green",
+        "creator_email": "aracely_tromp@torphy-jenkins.info",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 4,
+      "type": "post",
+      "attributes": {
+        "id": 4,
+        "title": "Peking Duck",
+        "creator_name": "Joselyn VonRueden",
+        "creator_email": "marianna_damore@lehner-metz.org",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 5,
+      "type": "post",
+      "attributes": {
+        "id": 5,
+        "title": "Hummus",
+        "creator_name": "Stacee Pfannerstill",
+        "creator_email": "barrett_johnston@weimann-gottlieb.name",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 6,
+      "type": "post",
+      "attributes": {
+        "id": 6,
+        "title": "California Maki",
+        "creator_name": "Fidel Schroeder",
+        "creator_email": "marquitta@kuvalis.info",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 7,
+      "type": "post",
+      "attributes": {
+        "id": 7,
+        "title": "French Toast",
+        "creator_name": "Alvaro Berge",
+        "creator_email": "randal_littel@fadel-fritsch.io",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 8,
+      "type": "post",
+      "attributes": {
+        "id": 8,
+        "title": "Arepas",
+        "creator_name": "Alva Kris DO",
+        "creator_email": "nathaniel_strosin@wintheiser.net",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    },
+    {
+      "id": 9,
+      "type": "post",
+      "attributes": {
+        "id": 9,
+        "title": "Meatballs with Sauce",
+        "creator_name": "Willie Kuhic",
+        "creator_email": "paul.rowe@mraz.biz",
+        "created_at": "2022-10-13 05:51:08 UTC",
+        "updated_at": "2022-10-13 05:51:08 UTC",
+        "created_at_epoch": 1665640268,
+        "updated_at_epoch": 1665640268,
+        "created_at_ist": "Thursday - Oct 13, 2022",
+        "updated_at_ist": "Thursday - Oct 13, 2022"
+      }
+    }
+  ]
+}
+
+```
+
+and with `set_type :post` disabled
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Tacos",
+    "creator_name": "Ella Erdman",
+    "creator_email": "sean.zieme@smitham.name",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 2,
+    "title": "Barbecue Ribs",
+    "creator_name": "Mrs. Fern Yundt",
+    "creator_email": "rafael.simonis@metz.com",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 69,
+    "title": "French Fries with Sausages",
+    "creator_name": "Vance Connelly",
+    "creator_email": "leslee_langosh@mann.biz",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 3,
+    "title": "Pork Belly Buns",
+    "creator_name": "Mrs. Willie Green",
+    "creator_email": "aracely_tromp@torphy-jenkins.info",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 4,
+    "title": "Peking Duck",
+    "creator_name": "Joselyn VonRueden",
+    "creator_email": "marianna_damore@lehner-metz.org",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 5,
+    "title": "Hummus",
+    "creator_name": "Stacee Pfannerstill",
+    "creator_email": "barrett_johnston@weimann-gottlieb.name",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 6,
+    "title": "California Maki",
+    "creator_name": "Fidel Schroeder",
+    "creator_email": "marquitta@kuvalis.info",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 7,
+    "title": "French Toast",
+    "creator_name": "Alvaro Berge",
+    "creator_email": "randal_littel@fadel-fritsch.io",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 8,
+    "title": "Arepas",
+    "creator_name": "Alva Kris DO",
+    "creator_email": "nathaniel_strosin@wintheiser.net",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  },
+  {
+    "id": 9,
+    "title": "Meatballs with Sauce",
+    "creator_name": "Willie Kuhic",
+    "creator_email": "paul.rowe@mraz.biz",
+    "created_at": "2022-10-13 05:51:08 UTC",
+    "updated_at": "2022-10-13 05:51:08 UTC",
+    "created_at_epoch": 1665640268,
+    "updated_at_epoch": 1665640268,
+    "created_at_ist": "Thursday - Oct 13, 2022",
+    "updated_at_ist": "Thursday - Oct 13, 2022"
+  }
+]
+```
+
+## Speed
+
+TODO: Please check yourself ;) I shall post the benchmarking later
+
 
 ## Development
 
