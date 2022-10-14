@@ -375,9 +375,31 @@ and with `set_type :post` disabled
 ]
 ```
 
-## Speed
+## Benchmark, rails 7.0.2.3, ruby 3.0.3
 
-TODO: Please check yourself ;) I shall post the benchmarking later
+```ruby
+
+  # there are 1100 posts in the DB, having fields 
+  # :id, :title, :content, :creator_name, :creator_email, :created_at, :updated_at
+  posts = Post.all
+  s = PostSerializer.new(posts)
+
+  n = 1000
+  Benchmark.bm do |x|
+    x.report("ActiveModel Serializer") { n.times { posts.to_json } }
+    x.report("JSON:API Serialization") { n.times { PostJsonapiSerializer.new(posts).serializable_hash.to_json }}
+    x.report("Blueprinter")            { n.times { PostBlueprint.render(posts) }}
+    x.report("FastJsonSerializer")     { n.times { s.serialized_json } }
+  end
+
+  # result
+  user                    system      total         real
+  ActiveModel Serializer  35.373407   0.000000      35.373407 ( 35.380744)
+  JSON:API Serialization  50.476935   0.043584      50.520519 ( 50.546082)
+  Blueprinter             20.458713   0.000000      20.458713 ( 20.484488)
+  FastJsonSerializer       5.239119   0.015989       5.255108 (  5.256627)
+
+```
 
 
 ## Development

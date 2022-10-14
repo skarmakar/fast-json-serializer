@@ -14,7 +14,6 @@ module Fast
           end
       
           # if set_type is not defined, it will return flat result, ie, not fast json api format
-          # check AdhocMarketSerializer for an example
           def set_type(attr_name)
             @resource_type = attr_name.to_s
           end
