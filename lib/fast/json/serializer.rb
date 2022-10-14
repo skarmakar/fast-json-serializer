@@ -1,4 +1,4 @@
-require "fast/json/serializer/version"
+require 'fast/json/serializer/version'
 
 module Fast
   module Json
