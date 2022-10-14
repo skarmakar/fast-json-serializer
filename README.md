@@ -72,7 +72,7 @@ end
 
 ### Formatting of the JSON
 
-Currently, it supports format two formats, key-value, and FastJsonapi format
+Currently, it supports two formats, key-value, and FastJsonapi format
 
 ```ruby
 PostSerializer.new(Post.limit(10)).serialized_json
